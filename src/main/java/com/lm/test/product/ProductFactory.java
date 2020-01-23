@@ -15,8 +15,6 @@ public class ProductFactory {
     public static Product createProduct(String itemLine) throws IncorrectInputFormatException {
         final String itemDescription;
         final List<String> exemptItems = new ArrayList<>(Arrays.asList(Constants.EXEMPT_ITEMS));
-        StringBuilder descriptionBuilder = new StringBuilder();
-        String descriptionToken;
         BigDecimal price;
         ProductOrigin origin;
         //Default value
@@ -29,33 +27,13 @@ public class ProductFactory {
             throw new IncorrectInputFormatException();
         }
 
-        if (scanner.hasNextInt()) {
-            quantity = scanner.nextInt();
-        } else {
-            throw new IncorrectInputFormatException();
-        }
-
-        while (scanner.hasNext()) {
-            descriptionToken = scanner.next();
-            if (descriptionToken.equals("at")) {
-                break;
-            }
-            descriptionBuilder.append(descriptionToken);
-            descriptionBuilder.append(" ");
-        }
-
-        if (descriptionBuilder.length() == 0) {
-            throw new IncorrectInputFormatException();
-        }
-
+        quantity = getQuantity(scanner);
+        
         //Product description without "at" string
-        itemDescription = descriptionBuilder.toString().trim();
+        itemDescription = getDescription(scanner);
 
-        if (scanner.hasNextBigDecimal()) {
-            price = scanner.nextBigDecimal();
-        } else {
-            throw new IncorrectInputFormatException();
-        }
+        price = getPrice(scanner);
+        
         scanner.close();
 
         if (exemptItems.stream().anyMatch(item -> itemDescription.contains(item))) {
@@ -65,5 +43,38 @@ public class ProductFactory {
         origin = itemDescription.contains(Constants.IMPORTED_ITEM)? ProductOrigin.IMPORTED : ProductOrigin.LOCAL;
 
         return new Product(itemDescription, quantity, price, type, origin);
+    }
+    
+    private static int getQuantity(Scanner scanner) throws IncorrectInputFormatException {
+        if (scanner.hasNextInt()) {
+            return scanner.nextInt();
+        } else {
+            throw new IncorrectInputFormatException();
+        }
+    }
+
+    private static String getDescription(Scanner scanner) throws IncorrectInputFormatException {
+        StringBuilder descriptionBuilder = new StringBuilder();
+        String descriptionToken;
+        while (scanner.hasNext()) {
+            descriptionToken = scanner.next();
+            if (descriptionToken.equals("at")) {
+                break;
+            }
+            descriptionBuilder.append(descriptionToken);
+            descriptionBuilder.append(" ");
+        }
+        if (descriptionBuilder.length() == 0) {
+            throw new IncorrectInputFormatException();
+        }
+        return descriptionBuilder.toString().trim();
+    }
+
+    private static BigDecimal getPrice(Scanner scanner) throws IncorrectInputFormatException{
+         if (scanner.hasNextBigDecimal()) {
+           return scanner.nextBigDecimal();
+        } else {
+            throw new IncorrectInputFormatException();
+        }
     }
 }
