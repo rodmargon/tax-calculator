@@ -7,7 +7,7 @@ To consider :
   - Software stack includes : 
     - java 8 
     - maven 3.6
-    - junit 4
+    - junit 5
     - lombok java library
     - junitparams java library.
   - Project is using GitHub workflows as CI tool. List of project builds is available by clicking on "Actions" tab.
